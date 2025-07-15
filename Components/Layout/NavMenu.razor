@@ -1,0 +1,74 @@
+﻿@using Blazor_Board.Services
+@inject UserSession UserSession
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<div class="flex flex-col h-full p-3 text-white bg-gray-800">
+    <a class="flex items-center mb-4" href="">
+        <span class="text-2xl font-semibold">Blazor Board</span>
+    </a>
+    <div class="space-y-2">
+        @if (UserSession.IsLoggedIn)
+        {
+            <div class="px-3 py-2 text-gray-300">
+                환영합니다, @UserSession.CurrentUser?.Name 님!
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="board">
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> 게시판
+                </NavLink>
+            </div>
+
+            <div class="nav-item">
+                <NavLink class="nav-link" href="mypage">
+                    <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> 내 정보
+                </NavLink>
+            </div>
+
+            <div class="nav-item">
+                <button @onclick="Logout" class="nav-link w-full text-left">
+                    <span class="bi bi-box-arrow-right-nav-menu" aria-hidden="true"></span> 로그아웃
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="nav-item">
+                <NavLink class="nav-link" href="login">
+                    <span class="bi bi-box-arrow-in-right-nav-menu" aria-hidden="true"></span> 로그인
+                </NavLink>
+            </div>
+            <div class="nav-item">
+                <NavLink class="nav-link" href="register">
+                    <span class="bi bi-person-plus-nav-menu" aria-hidden="true"></span> 회원가입
+                </NavLink>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    protected override void OnInitialized()
+    {
+        // UserSession의 OnChange 이벤트가 발생할 때마다 StateHasChanged()를 호출하여
+        // NavMenu 컴포넌트를 강제로 새로고침합니다.
+        UserSession.OnChange += StateHasChanged;
+    }
+
+    private async Task Logout()
+    {
+        await UserSession.Logout();
+        Navigation.NavigateTo("/"); 
+    }
+
+    // 컴포넌트가 소멸될 때 이벤트 구독을 해제하여 메모리 누수를 방지합니다.
+    public void Dispose()
+    {
+        UserSession.OnChange -= StateHasChanged;
+    }
+}

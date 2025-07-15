@@ -1,0 +1,48 @@
+﻿@page "/board/create"
+@using Microsoft.EntityFrameworkCore
+@using Blazor_Board.Data
+@using Blazor_Board.Models
+@inject ApplicationDbContext _context
+@inject NavigationManager Navigation
+
+<PageTitle>새 글 작성</PageTitle>
+
+<h3 class="text-2xl font-bold mb-4">새 글 작성하기</h3>
+
+<EditForm Model="@newPost" OnValidSubmit="HandleValidSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-4">
+        <label for="author" class="block mb-2 text-sm font-medium text-gray-900">작성자</label>
+        <InputText id="author" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" @bind-Value="newPost.Author" />
+    </div>
+    <div class="mb-4">
+        <label for="title" class="block mb-2 text-sm font-medium text-gray-900">제목</label>
+        <InputText id="title" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" @bind-Value="newPost.Title" />
+    </div>
+    <div class="mb-4">
+        <label for="content" class="block mb-2 text-sm font-medium text-gray-900">내용</label>
+        <InputTextArea id="content" rows="6" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" @bind-Value="newPost.Content" />
+    </div>
+
+    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+        저장하기
+    </button>
+</EditForm>
+
+@code {
+    private Post newPost = new();
+
+    private async Task HandleValidSubmit()
+    {
+        // 사용자가 입력한 newPost 객체를 DB에 추가
+        _context.Posts.Add(newPost);
+
+        // 변경사항을 DB에 최종 저장
+        await _context.SaveChangesAsync();
+
+        // 저장 후 게시판 목록 페이지로 이동
+        Navigation.NavigateTo("/board");
+    }
+}

@@ -1,0 +1,36 @@
+﻿@page "/mypage"
+@using Blazor_Board.Services
+@inject UserSession UserSession
+@inject NavigationManager Navigation
+
+<PageTitle>내 정보</PageTitle>
+
+@if (UserSession.IsLoggedIn)
+{
+    <div class="max-w-md mx-auto bg-white rounded-lg shadow-md overflow-hidden mt-10">
+        <div class="px-6 py-4">
+            <h3 class="text-2xl font-bold mb-2 text-center">내 정보</h3>
+            <div class="mt-4 text-gray-700">
+                <div class="flex justify-between py-2 border-b">
+                    <span class="font-semibold">아이디:</span>
+                    <span>@UserSession.CurrentUser?.Username</span>
+                </div>
+                <div class="flex justify-between py-2">
+                    <span class="font-semibold">이름:</span>
+                    <span>@UserSession.CurrentUser?.Name</span>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        // 페이지가 로드될 때, 로그인 상태가 아니면 로그인 페이지로 보내버립니다.
+        if (!UserSession.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+}

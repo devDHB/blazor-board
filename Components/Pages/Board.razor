@@ -1,0 +1,138 @@
+﻿@page "/board"
+@page "/board/{CurrentPage:int}"
+
+@using Microsoft.EntityFrameworkCore
+@using Blazor_Board.Data
+@using Blazor_Board.Models
+@using Blazor_Board.Services
+@inject UserSession UserSession
+@inject ApplicationDbContext _context
+@inject IJSRuntime jsRuntime
+@inject NavigationManager Navigation
+
+<PageTitle>게시판</PageTitle>
+
+<h1 class="text-2xl font-bold mb-4">게시판 목록</h1>
+
+<div class="flex justify-end mb-4">
+    <a href="/board/create" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5">
+        글쓰기
+    </a>
+</div>
+
+@if (posts == null)
+{
+    <p><em>로딩 중...</em></p>
+}
+else
+{
+    <div class="overflow-x-auto relative shadow-md sm:rounded-lg">
+        <table class="w-full text-sm text-left text-gray-500">
+            <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                <tr>
+                    <th scope="col" class="py-3 px-6">번호</th>
+                    <th scope="col" class="py-3 px-6">제목</th>
+                    <th scope="col" class="py-3 px-6">작성자</th>
+                    <th scope="col" class="py-3 px-6">작성일</th>
+                    <th scope="col" class="py-3 px-6">관리</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var post in posts)
+                {
+                    <tr class="bg-white border-b hover:bg-gray-50">
+                        <td class="py-4 px-6">@post.Id</td>
+                        <td class="py-4 px-6 font-medium text-gray-900 whitespace-nowrap">
+                            <a href="/post/@post.Id" class="text-blue-600 hover:underline">@post.Title</a>
+                        </td>
+                        <td class="py-4 px-6">@post.Author</td>
+                        <td class="py-4 px-6">@post.CreatedAt.ToShortDateString()</td>
+                        <td class="py-4 px-6">
+                            @if (UserSession.IsLoggedIn && UserSession.CurrentUser?.Role == "Admin")
+                            {
+                                <button @onclick="() => DeletePost(post.Id)" class="font-medium text-red-600 hover:underline">삭제</button>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex justify-center mt-8">
+        <nav aria-label="Page navigation">
+            <ul class="inline-flex items-center -space-x-px">
+                <li>
+                    <a href="@(CurrentPage > 1 ? $"/board/{CurrentPage - 1}" : "#")"
+                       class="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 @(CurrentPage <= 1 ? "opacity-50 cursor-not-allowed" : "")">
+                        이전
+                    </a>
+                </li>
+
+                @for (int i = 1; i <= TotalPages; i++)
+                {
+                    var pageNum = i;
+                    <li>
+                        <a href="/board/@pageNum"
+                           class="py-2 px-3 leading-tight border @(i == CurrentPage ? "text-blue-600 bg-blue-50 border-blue-300" : "text-gray-500 bg-white border-gray-300 hover:bg-gray-100 hover:text-gray-700")">
+                            @i
+                        </a>
+                    </li>
+                }
+
+                <li>
+                    <a href="@(CurrentPage < TotalPages ? $"/board/{CurrentPage + 1}" : "#")"
+                       class="py-2 px-3 leading-tight text-gray-500 bg-white rounded-r-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 @(CurrentPage >= TotalPages ? "opacity-50 cursor-not-allowed" : "")">
+                        다음
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+}
+
+@code {
+    private List<Post>? posts;
+    private int TotalPages;
+    private int PageSize = 5; // 한 페이지에 보여줄 게시글 수
+
+    [Parameter]
+    public int CurrentPage { get; set; } = 1;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        // 👇 이 부분을 추가하여 1 미만의 페이지 번호를 방지합니다.
+        if (CurrentPage < 1)
+        {
+            CurrentPage = 1;
+        }
+
+        // 전체 게시글 수를 세서 총 페이지 수를 계산
+        var totalPostCount = await _context.Posts.CountAsync();
+        TotalPages = (int)Math.Ceiling(totalPostCount / (double)PageSize);
+
+        // 현재 페이지에 맞는 데이터만 가져오기
+        posts = await _context.Posts
+            .OrderByDescending(p => p.Id)
+            .Skip((CurrentPage - 1) * PageSize) // (현재페이지-1) * 페이지크기 만큼 건너뛰고
+            .Take(PageSize)                   // 페이지크기 만큼 가져온다
+            .ToListAsync();
+    }
+
+    private async Task DeletePost(int postId)
+    {
+        var confirmed = await jsRuntime.InvokeAsync<bool>("confirm", new object[] { "관리자 권한으로 이 게시글을 삭제합니다. 계속하시겠습니까?" });
+        if (confirmed)
+        {
+            var postToDelete = await _context.Posts.FindAsync(postId);
+            if (postToDelete != null)
+            {
+                _context.Posts.Remove(postToDelete);
+                await _context.SaveChangesAsync();
+
+                // 삭제 후 현재 페이지를 다시 로드
+                Navigation.NavigateTo($"/board/{CurrentPage}", forceLoad: true);
+            }
+        }
+    }
+}

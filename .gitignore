@@ -1,0 +1,17 @@
+# Visual Studio
+.vs/
+
+# Build results
+[Bb]in/
+[Oo]bj/
+
+# User-specific files
+*.user
+*.suo
+
+# Node.js
+node_modules/
+npm-debug.log
+
+# Secrets
+appsettings.Development.json
