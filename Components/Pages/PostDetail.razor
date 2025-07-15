@@ -2,29 +2,39 @@
 @using Microsoft.EntityFrameworkCore
 @using Blazor_Board.Data
 @using Blazor_Board.Models
+@using Blazor_Board.Services
 @inject ApplicationDbContext _context
 @inject IJSRuntime JSRuntime
+@inject UserSession UserSession
+
 
 @if (post == null)
 {
-    <p><em>게시글을 찾을 수 없습니다...</em></p>
+    <p>
+        <em>
+            ポストが見つかりません...
+        </em>
+    </p>
 }
 else
 {
     <div class="p-4 sm:p-6 lg:p-8 bg-white rounded-lg shadow-md">
         <h1 class="text-3xl font-bold text-gray-900 mb-2">@post.Title</h1>
+        @if (UserSession.IsLoggedIn && (UserSession.CurrentUser.Id == post.UserId || UserSession.CurrentUser.Role == "Admin"))
+        {
         <div class="flex justify-end my-4">
             <a href="@($"/post/edit/{post.Id}")" class="text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-5 py-2.5">
-                수정
+                修正
             </a>
             <button @onclick="DeletePost" class="text-white bg-red-600 hover:bg-red-700 font-medium rounded-lg text-sm px-5 py-2.5">
-                삭제
+                削除
             </button>
         </div>
+        }
         <div class="flex items-center text-sm text-gray-500 mb-6">
-            <span>작성자: @post.Author</span>
+            <span>作成者: @post.Author</span>
             <span class="mx-2">|</span>
-            <span>작성일: @post.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
+            <span>作成日: @post.CreatedAt.ToString("yyyy-MM-dd HH:mm")</span>
         </div>
         <hr class="mb-6">
         <div class="text-gray-700 leading-relaxed">

@@ -17,14 +17,14 @@
 </div>
 
 @code {
-    // 👇 OnInitializedAsync 대신 OnAfterRenderAsync를 사용합니다.
+    // OnInitializedAsync 대신 OnAfterRenderAsync를 사용합니다.
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // firstRender가 true일 때, 즉 최초 렌더링 후에만 실행합니다.
         if (firstRender)
         {
             await UserSession.LoadUserFromStorage();
-            StateHasChanged(); // 👈 세션을 불러온 후 UI를 한번 더 갱신해줍니다.
+            StateHasChanged(); // 세션을 불러온 후 UI를 한번 더 갱신해줍니다.
         }
     }
 }

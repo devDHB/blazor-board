@@ -11,28 +11,28 @@
         @if (UserSession.IsLoggedIn)
         {
             <div class="px-3 py-2 text-gray-300">
-                환영합니다, @UserSession.CurrentUser?.Name 님!
+                お帰りなさい, @UserSession.CurrentUser?.Name 様!
             </div>
             <div class="nav-item">
                 <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> Home
+                    <span class="bi bi-house-door-fill-nav-menu" aria-hidden="true"></span> ホーム
                 </NavLink>
             </div>
             <div class="nav-item">
                 <NavLink class="nav-link" href="board">
-                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> 게시판
+                    <span class="bi bi-list-nested-nav-menu" aria-hidden="true"></span> ボードリスト
                 </NavLink>
             </div>
 
             <div class="nav-item">
                 <NavLink class="nav-link" href="mypage">
-                    <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> 내 정보
+                    <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> マイインフォ
                 </NavLink>
             </div>
 
             <div class="nav-item">
                 <button @onclick="Logout" class="nav-link w-full text-left">
-                    <span class="bi bi-box-arrow-right-nav-menu" aria-hidden="true"></span> 로그아웃
+                    <span class="bi bi-box-arrow-right-nav-menu" aria-hidden="true"></span> ログアウト
                 </button>
             </div>
         }
@@ -40,12 +40,12 @@
         {
             <div class="nav-item">
                 <NavLink class="nav-link" href="login">
-                    <span class="bi bi-box-arrow-in-right-nav-menu" aria-hidden="true"></span> 로그인
+                    <span class="bi bi-box-arrow-in-right-nav-menu" aria-hidden="true"></span> ログイン
                 </NavLink>
             </div>
             <div class="nav-item">
                 <NavLink class="nav-link" href="register">
-                    <span class="bi bi-person-plus-nav-menu" aria-hidden="true"></span> 회원가입
+                    <span class="bi bi-person-plus-nav-menu" aria-hidden="true"></span> 会員登録
                 </NavLink>
             </div>
         }

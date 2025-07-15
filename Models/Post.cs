@@ -6,5 +6,6 @@ public class Post
     public string Title { get; set; } // 글 제목
     public string Content { get; set; } // 글 내용
     public string Author { get; set; } // 작성자
+    public int UserId { get; set; }
     public DateTime CreatedAt { get; set; } = DateTime.Now; // 작성 날짜 (자동으로 현재 시간 저장)
 }
