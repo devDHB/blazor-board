@@ -2,7 +2,7 @@
 @using Microsoft.EntityFrameworkCore
 @using Blazor_Board.Data
 @using Blazor_Board.Models
-@inject ApplicationDbContext _context
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Navigation
 
 <PageTitle>会員登録</PageTitle>
@@ -44,21 +44,20 @@
 
     private async Task HandleRegister()
     {
-        // 이미 존재하는 아이디인지 확인
-        var existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Username == newUser.Username);
+        using var context = DbFactory.CreateDbContext();
+        // 既に存在するIDなのか確認
+        var existingUser = await context.Users.FirstOrDefaultAsync(u => u.Username == newUser.Username);
 
         if (existingUser != null)
         {
-            // 간단한 에러 메시지 처리 (나중에 더 개선할 수 있습니다)
             errorMessage = "既に使用中のIDです。";
             return;
         }
 
-        // 새 사용자 추가
-        _context.Users.Add(newUser);
-        await _context.SaveChangesAsync();
+        // 新しいユーザー追加
+        context.Users.Add(newUser);
+        await context.SaveChangesAsync();
 
-        // 로그인 페이지로 이동 (다음 단계에서 만들 예정)
         Navigation.NavigateTo("/login");
     }
 }

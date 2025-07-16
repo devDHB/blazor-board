@@ -3,7 +3,8 @@
 @using Blazor_Board.Data
 @using Blazor_Board.Models
 @using Blazor_Board.Services;
-@inject ApplicationDbContext _context
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
 @inject NavigationManager Navigation
 @inject UserSession UserSession;
 
@@ -40,7 +41,7 @@
 </div>
 
 @code {
-    // 로그인 폼 전용 모델 클래스
+    // ログインフォーム専用モデルクラス
     public class LoginModel
     {
         public string Username { get; set; } = "";
@@ -52,21 +53,21 @@
 
     private async Task HandleLogin()
     {
-        // 1. DB에서 아이디로 사용자 찾기
-        var user = await _context.Users
+        // DBからIDでユーザーを探す
+        using var context = DbFactory.CreateDbContext();
+        var user = await context.Users
             .FirstOrDefaultAsync(u => u.Username == loginModel.Username);
 
-        // 2. 사용자가 있고, 비밀번호가 일치하는지 확인
+        // ユーザーがいて、パスワードが一致していることを確認
         if (user != null && user.Password == loginModel.Password)
         {
-            // 로그인 성공!
-            // (지금은 단순히 메인 페이지로 이동하지만, 나중에 실제 로그인 상태 관리 로직 추가)
-            await UserSession.Login(user); // 세션 서비스에 사용자 정보 저장
+            // ログイン成功
+            await UserSession.Login(user); // セッションサービスにユーザー情報を保存
             Navigation.NavigateTo("/");
         }
         else
         {
-            // 로그인 실패
+            // ログイン失敗
             errorMessage = "ID 又は パスワードが正しくないです。";
         }
     }

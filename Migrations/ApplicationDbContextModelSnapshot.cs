@@ -56,28 +56,55 @@ namespace BlazorBoard.Migrations
                         new
                         {
                             Id = 1,
-                            Author = "Admin",
-                            Content = "게시판이 열렸습니다!",
-                            CreatedAt = new DateTime(2025, 7, 13, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "첫 번째 공지사항",
+                            Author = "admin",
+                            Content = "掲示板が開かれました！",
+                            CreatedAt = new DateTime(2025, 7, 5, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "1番目",
                             UserId = 0
                         },
                         new
                         {
                             Id = 2,
-                            Author = "Gildong",
-                            Content = "처음으로 글을 남깁니다.",
-                            CreatedAt = new DateTime(2025, 7, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "안녕하세요!",
+                            Author = "admin",
+                            Content = "初めまして",
+                            CreatedAt = new DateTime(2025, 7, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "初めまして!",
                             UserId = 0
                         },
                         new
                         {
                             Id = 3,
-                            Author = "Chunhyang",
-                            Content = "Blazor는 어떻게 사용하나요?",
+                            Author = "admin",
+                            Content = "Blazor",
+                            CreatedAt = new DateTime(2025, 7, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "Blazor Board Site",
+                            UserId = 0
+                        },
+                        new
+                        {
+                            Id = 4,
+                            Author = "admin",
+                            Content = "いいですね！",
+                            CreatedAt = new DateTime(2025, 7, 11, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "いい天気です",
+                            UserId = 0
+                        },
+                        new
+                        {
+                            Id = 5,
+                            Author = "kim",
+                            Content = "初めてですね",
+                            CreatedAt = new DateTime(2025, 7, 14, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            Title = "おはようございます!",
+                            UserId = 0
+                        },
+                        new
+                        {
+                            Id = 6,
+                            Author = "bang",
+                            Content = "質問！",
                             CreatedAt = new DateTime(2025, 7, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            Title = "질문 있습니다.",
+                            Title = "質問があります",
                             UserId = 0
                         });
                 });
@@ -109,6 +136,32 @@ namespace BlazorBoard.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "管理者",
+                            Password = "1234",
+                            Role = "Admin",
+                            Username = "admin"
+                        },
+                        new
+                        {
+                            Id = 2,
+                            Name = "方斗賢",
+                            Password = "1234",
+                            Role = "User",
+                            Username = "bang"
+                        },
+                        new
+                        {
+                            Id = 3,
+                            Name = "金",
+                            Password = "1234",
+                            Role = "User",
+                            Username = "kim"
+                        });
                 });
 #pragma warning restore 612, 618
         }

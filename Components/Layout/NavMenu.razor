@@ -55,8 +55,8 @@
 @code {
     protected override void OnInitialized()
     {
-        // UserSession의 OnChange 이벤트가 발생할 때마다 StateHasChanged()를 호출하여
-        // NavMenu 컴포넌트를 강제로 새로고침합니다.
+        // UserSessionのOnChangeイベントが発生するたびにStateHasChanged()を呼び出して
+        // NavMenuコンポーネントを強制的に更新します
         UserSession.OnChange += StateHasChanged;
     }
 
@@ -66,7 +66,7 @@
         Navigation.NavigateTo("/"); 
     }
 
-    // 컴포넌트가 소멸될 때 이벤트 구독을 해제하여 메모리 누수를 방지합니다.
+    // メモリ漏れを防止します
     public void Dispose()
     {
         UserSession.OnChange -= StateHasChanged;

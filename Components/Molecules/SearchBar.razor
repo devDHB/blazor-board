@@ -4,10 +4,10 @@
 <div class="flex items-center space-x-2">
     <InputText @bind-Value="SearchTerm"
                class="bg-gray-50 border border-gray-300 text-sm rounded-lg block w-full p-2.5"
-               placeholder="검색어를 입력하세요..."
+               placeholder="テキストを入力してください。"
                @onkeyup="HandleSearchInput" />
 
-    <PrimaryButton OnClick="HandleSearchClick">검색</PrimaryButton>
+    <PrimaryButton OnClick="HandleSearchClick">検索</PrimaryButton>
 </div>
 
 @code {

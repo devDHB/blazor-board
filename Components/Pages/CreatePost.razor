@@ -3,7 +3,7 @@
 @using Blazor_Board.Data
 @using Blazor_Board.Models
 @using Blazor_Board.Services
-@inject ApplicationDbContext _context
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Navigation
 @inject UserSession UserSession
 
@@ -36,19 +36,25 @@
 @code {
     private Post newPost = new();
 
+    protected override void OnInitialized()
+    {
+        if (!UserSession.IsLoggedIn)
+        {
+            Navigation.NavigateTo("/login");
+        }
+    }
+
     private async Task HandleValidSubmit()
     {
-        // 글을 저장하기 전에, 현재 로그인한 사용자의 ID와 이름을 Post 객체에 할당합니다.
+        if (UserSession.CurrentUser == null) return;
+
         newPost.UserId = UserSession.CurrentUser.Id;
         newPost.Author = UserSession.CurrentUser.Username;
 
-        // 사용자가 입력한 newPost 객체를 DB에 추가
-        _context.Posts.Add(newPost);
+        using var context = DbFactory.CreateDbContext();
+        context.Posts.Add(newPost);
+        await context.SaveChangesAsync();
 
-        // 변경사항을 DB에 최종 저장
-        await _context.SaveChangesAsync();
-
-        // 저장 후 게시판 목록 페이지로 이동
         Navigation.NavigateTo("/board");
     }
 }

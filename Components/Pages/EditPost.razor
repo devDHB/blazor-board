@@ -2,8 +2,11 @@
 @using Microsoft.EntityFrameworkCore
 @using Blazor_Board.Data
 @using Blazor_Board.Models
-@inject ApplicationDbContext _context
+@using Blazor_Board.Services
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
 @inject NavigationManager Navigation
+@inject UserSession UserSession
+
 
 <PageTitle>ポスト修正</PageTitle>
 
@@ -46,16 +49,24 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // DB에서 수정할 게시글의 기존 데이터를 찾아 폼에 채워줍니다.
-        postToEdit = await _context.Posts.FindAsync(PostId);
+        using var context = DbFactory.CreateDbContext();
+        postToEdit = await context.Posts.FindAsync(PostId);
+
+        // 権限確認ロジック追加
+        // ログインしていないか、作成者でもなく管理者でもない場合は、掲示板に移動
+        if (!UserSession.IsLoggedIn || (postToEdit?.UserId != UserSession.CurrentUser.Id && UserSession.CurrentUser.Role != "Admin"))
+        {
+            Navigation.NavigateTo("/board", forceLoad: true);
+        }
     }
 
     private async Task HandleValidSubmit()
     {
-        // 변경된 내용을 DB에 최종 저장합니다.
-        await _context.SaveChangesAsync();
+        using var context = DbFactory.CreateDbContext();
+        context.Posts.Update(postToEdit);
+        // 変更された内容をDBに最終保存
+        await context.SaveChangesAsync();
 
-        // 저장 후, 수정한 글의 상세 보기 페이지로 이동합니다.
         Navigation.NavigateTo($"/post/{PostId}");
     }
 }

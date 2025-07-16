@@ -1,12 +1,12 @@
 ﻿using Blazor_Board.Models;
-using Blazored.LocalStorage; // 👈 추가
+using Blazored.LocalStorage;
 
 namespace Blazor_Board.Services;
 
 public class UserSession
 {
     private readonly ILocalStorageService _localStorage;
-    private const string UserKey = "currentUser"; // 👈 Local Storage에 저장될 키 이름
+    private const string UserKey = "currentUser"; // Local Storageに保存されるキー名
 
     public User? CurrentUser { get; private set; }
     public bool IsLoggedIn => CurrentUser != null;
@@ -17,27 +17,27 @@ public class UserSession
         _localStorage = localStorage;
     }
 
-    // 앱 시작 시 Local Storage에서 로그인 정보 불러오기
+    // アプリ起動時にLocal Storageからログイン情報を読み込む
     public async Task LoadUserFromStorage()
     {
         if (await _localStorage.ContainKeyAsync(UserKey))
         {
             CurrentUser = await _localStorage.GetItemAsync<User>(UserKey);
-            NotifyStateChanged(); // 👈 이 신호를 보내는 코드를 추가하세요!
+            NotifyStateChanged();
         }
     }
 
     public async Task Login(User user)
     {
         CurrentUser = user;
-        await _localStorage.SetItemAsync(UserKey, user); // 👈 Local Storage에 저장
+        await _localStorage.SetItemAsync(UserKey, user); // Local Storageに保存
         NotifyStateChanged();
     }
 
     public async Task Logout()
     {
         CurrentUser = null;
-        await _localStorage.RemoveItemAsync(UserKey); // 👈 Local Storage에서 삭제
+        await _localStorage.RemoveItemAsync(UserKey); // Local Storageから削除
         NotifyStateChanged();
     }
 

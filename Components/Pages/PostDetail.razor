@@ -3,7 +3,8 @@
 @using Blazor_Board.Data
 @using Blazor_Board.Models
 @using Blazor_Board.Services
-@inject ApplicationDbContext _context
+@inject IDbContextFactory<ApplicationDbContext> DbFactory
+
 @inject IJSRuntime JSRuntime
 @inject UserSession UserSession
 
@@ -50,29 +51,29 @@ else
 
     private Post? post;
 
-    @* 👇 NavigationManager 주입 추가 *@
+
     [Inject]
     private NavigationManager Navigation { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        post = await _context.Posts.FindAsync(PostId);
+        using var context = DbFactory.CreateDbContext();
+        post = await context.Posts.FindAsync(PostId);
     }
 
-    // 👇 이 메서드를 새로 추가하세요!
     private async Task DeletePost()
     {
-        // JavaScript의 confirm 함수를 호출해 사용자에게 확인받습니다.
-        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "정말로 이 게시글을 삭제하시겠습니까?");
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "このポストを削除しますか？");
+        using var context = DbFactory.CreateDbContext();
 
         if (confirmed)
         {
-            var postToDelete = await _context.Posts.FindAsync(PostId);
+            var postToDelete = await context.Posts.FindAsync(PostId);
             if (postToDelete != null)
             {
-                _context.Posts.Remove(postToDelete);
-                await _context.SaveChangesAsync();
-                Navigation.NavigateTo("/board"); // 삭제 후 목록으로 이동
+                context.Posts.Remove(postToDelete);
+                await context.SaveChangesAsync();
+                Navigation.NavigateTo("/board");
             }
         }
     }
